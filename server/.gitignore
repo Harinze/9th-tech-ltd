@@ -1,0 +1,34 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+logs/*.log
+debug.log
+error.log
+
+# Environment Variables
+.env
+
+# Build files
+dist/
+build/
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+
+# Database (if using SQLite)
+*.sqlite
+*.sqlite3
