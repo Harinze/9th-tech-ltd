@@ -28,20 +28,24 @@ const LoginForm = () => {
 
     const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
     try {
-      const { data } = await axios.post(`http://localhost:5000${endpoint}`, formData, { withCredentials: true });
+        const { data } = await axios.post(`http://localhost:5000${endpoint}`, formData, { withCredentials: true });
 
-      localStorage.setItem("token", data.token);
-      setMessage(isLogin ? `Welcome, ${data.user.name}!` : "Account created successfully!");
+        // ✅ Store token & user data in localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user)); 
 
-      if (isLogin) {
-        navigate("/profile"); // Redirect to profile page
-      }
+        setMessage(isLogin ? `Welcome, ${data.user.name}!` : "Account created successfully!");
+
+        if (isLogin) {
+            navigate("/profile"); // Redirect to Profile Page
+        }
     } catch (error) {
-      setMessage(error.response?.data?.error || "Something went wrong!");
+        setMessage(error.response?.data?.error || "Something went wrong!");
     }
 
     setLoading(false);
-  };
+};
+
 
   return (
     <div className="container">

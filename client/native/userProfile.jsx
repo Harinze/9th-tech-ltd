@@ -1,54 +1,40 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const controller = new AbortController();
+  useEffect(() => {
+    if (!user) navigate("/login");
+  }, [user, navigate]);
 
-        const fetchUser = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/api/user", {
-                    withCredentials: true, 
-                    signal: controller.signal,
-                });
-
-                const { name, email, profilePicture } = response.data; 
-                setUser({ name, email, profilePicture });
-            } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log("Request canceled", error.message);
-                } else {
-                    setError("Failed to load user data");
-                    console.error("Error fetching user data:", error);
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-
-        return () => controller.abort();
-    }, []);
-
-    if (loading) return <p>Loading user...</p>;
-    if (error) return <p className="error">{error}</p>;
-
-    return user ? (
-        <div className="user-profile">
-            <img src={user.profilePicture} alt={user.name} className="profile-pic" />
-            <div>
-                <h2>{user.name}</h2>
-                <p>{user.email}</p>
-            </div>
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 text-lg font-semibold text-gray-700 dark:text-white">
+        <div className="animate-pulse text-center">
+          <p>Loading user...</p>
         </div>
-    ) : (
-        <p>No user found</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-sm text-center transform transition-all hover:scale-105">
+        <img
+          src={user.profilePicture || "https://via.placeholder.com/150"}
+          alt="User Profile"
+          className="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-300 dark:border-gray-600 shadow-md"
+        />
+        <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white">{user.name}</h2>
+        <p className="text-gray-600 dark:text-gray-300">{user.email}</p>
+      </div>
+    </div>
+  );
 };
 
 export default UserProfile;

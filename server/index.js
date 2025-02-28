@@ -104,17 +104,21 @@ const authMiddleware = (req, res, next) => {
 };
 
 // User Profile Route (Protected)
-app.get("/user", async (req, res) => {
-  try {
-      const user = await User.findById(req.user.id).select("name email profilePicture");
-      if (!user) return res.status(404).json({ error: "User not found" });
 
-      res.json(user);
+app.get("/api/user", authMiddleware, async (req, res) => {
+  try {
+    // ✅ Fetch user by ID after verifying token
+    const user = await User.findById(req.user.id).select("name email profilePicture");
+    
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user);
   } catch (error) {
-      console.error("User Fetch Error:", error);
-      res.status(500).json({ error: "Internal server error" });
+    console.error("User Fetch Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 // Global Error Handler
 app.use((err, req, res, next) => {
